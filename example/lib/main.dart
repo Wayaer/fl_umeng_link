@@ -38,15 +38,27 @@ class _HomePageState extends State<_HomePage> {
     debugPrint('注册友盟');
     final bool? data = await FlUMeng().init(
         preInit: true,
-        androidAppKey: '5f8fe2abfac90f1c19a8642e',
-        iosAppKey: '5f8fe4d4c1122b44acfc7aa7',
+        androidAppKey: '6248116b6adb343c47eff1a4',
+        iosAppKey: '6203785ce014255fcb18fcad',
         channel: 'channel');
     debugPrint('Umeng 初始化成功 = $data');
     await FlUMeng().setLogEnabled(true);
 
-    // debugPrint('注册友盟性能检测');
-    // final bool? value = await FlUMengAPM().init();
-    // debugPrint('Umeng apm 初始化成功 = $value');
+    debugPrint('监听友盟超链');
+    final bool? value = await FlUMengLink.getInstallParams();
+    debugPrint('getInstallParams 初始化成功 = $value');
+    final bool handler =
+        FlUMengLink.addMethodCallHandler(onInstall: (UMLinkResult? result) {
+      text = 'onInstall\n${result?.toMap()}';
+      setState(() {});
+    }, onLink: (UMLinkResult? result) {
+      text = 'onLink\n${result?.toMap()}';
+      setState(() {});
+    }, onError: (String? error) {
+      text = 'onError\n$error';
+      setState(() {});
+    });
+    debugPrint('addMethodCallHandler 初始化成功 = $handler');
   }
 
   @override
@@ -62,22 +74,6 @@ class _HomePageState extends State<_HomePage> {
               color: Colors.black12, borderRadius: BorderRadius.circular(6)),
           child: SingleChildScrollView(
               child: Text(text, textAlign: TextAlign.center))),
-      // ElevatedButton(
-      //     onPressed: () async {
-      //       final bool data =
-      //           await FlUMengAPM().setAppVersion('1.0.0', '1.0.1', '20');
-      //       text = 'setAppVersion  $data';
-      //       setState(() {});
-      //     },
-      //     child: const Text('setCustomLogWithCrash')),
-      if (defaultTargetPlatform == TargetPlatform.android) ...[
-        const Padding(padding: EdgeInsets.all(5), child: Text('仅支持 Android')),
-        Wrap(
-            spacing: 5,
-            runSpacing: 5,
-            alignment: WrapAlignment.center,
-            children: [])
-      ]
     ]);
   }
 }
