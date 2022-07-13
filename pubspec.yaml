@@ -1,5 +1,5 @@
 name: fl_umeng_link
-description: umeng link plugin for flutter, only Android and IOS are supported
+description: Umeng link plugin for flutter, only Android and IOS are supported
 version: 0.0.1
 repository: https://github.com/Wayaer/fl_umeng_link.git
 
