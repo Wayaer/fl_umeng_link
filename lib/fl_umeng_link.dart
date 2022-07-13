@@ -4,7 +4,10 @@ import 'package:flutter/services.dart';
 
 export 'package:fl_umeng/fl_umeng.dart';
 
+/// 错误回调
 typedef FlUMLinkHandlerError = void Function(String? error);
+
+/// 安装或者link回调
 typedef FlUMLinkHandlerLink = void Function(UMLinkResult? result);
 
 class FlUMengLink {
@@ -18,6 +21,7 @@ class FlUMengLink {
 
   /// 安装后 获取的参数
   static Future<bool> getInstallParams({bool clipBoardEnabled = true}) async {
+    if (!_supportPlatform) return false;
     final bool? state =
         await _channel.invokeMethod('getInstallParams', clipBoardEnabled);
     return state ?? false;
@@ -37,7 +41,6 @@ class FlUMengLink {
     if (isInit) {
       _channel.setMethodCallHandler(null);
       _channel.setMethodCallHandler((call) async {
-        print(call.arguments);
         switch (call.method) {
           case 'onLink':
             onLink?.call(UMLinkResult.fromMap(call.arguments));
@@ -55,14 +58,20 @@ class FlUMengLink {
   }
 }
 
+/// 回调结果
 class UMLinkResult {
   UMLinkResult.fromMap(Map<dynamic, dynamic> map)
       : params = map['params'] as Map<dynamic, dynamic>?,
         path = map['path'] as String?,
         uri = map['uri'] as String?;
 
+  /// params
   Map<dynamic, dynamic>? params;
+
+  /// path  onLink
   String? path;
+
+  /// uri  onInstall
   String? uri;
 
   Map<String, dynamic> toMap() => {'path': path, 'uri': uri, 'params': params};
