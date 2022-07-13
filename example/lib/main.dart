@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:fl_umeng_link/fl_umeng_link.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -44,7 +43,7 @@ class _HomePageState extends State<_HomePage> {
     debugPrint('Umeng 初始化成功 = $data');
     await FlUMeng().setLogEnabled(true);
 
-    debugPrint('监听友盟超链');
+    debugPrint('监听友盟超链安装参数回调');
     final bool? value = await FlUMengLink.getInstallParams();
     debugPrint('getInstallParams 初始化成功 = $value');
     final bool handler =
