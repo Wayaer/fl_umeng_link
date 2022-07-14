@@ -20,7 +20,7 @@ class FlUMengLink {
   static const MethodChannel _channel = MethodChannel('UMeng.link');
 
   /// 安装后 获取的参数
-  static Future<bool> getInstallParams({bool clipBoardEnabled = true}) async {
+  Future<bool> getInstallParams({bool clipBoardEnabled = true}) async {
     if (!_supportPlatform) return false;
     final bool? state =
         await _channel.invokeMethod('getInstallParams', clipBoardEnabled);
@@ -28,7 +28,7 @@ class FlUMengLink {
   }
 
   /// 监听回调参数
-  static bool addMethodCallHandler({
+  bool addMethodCallHandler({
     FlUMLinkHandlerError? onError,
 
     /// h5 直接启动app
