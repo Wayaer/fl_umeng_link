@@ -69,6 +69,10 @@
 - (void)getLinkPath:(NSString *)path params:(NSDictionary *)params {
     _path = path;
     linkParams = params;
+    [self.channel invokeMethod:@"onLink" arguments:@{
+            @"linkParams": params,
+            @"path": path,
+    }];
 }
 
 - (void)invokeMethodInstall:(NSDictionary *)params :(NSURL *)url :(NSError *)error {

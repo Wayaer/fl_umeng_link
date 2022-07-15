@@ -19,7 +19,7 @@ class FlUMengLink {
 
   static const MethodChannel _channel = MethodChannel('UMeng.link');
 
-  /// 获取App启动参数
+  /// 获取A启动参数 link 和install
   Future<UMLinkResult?> getLaunchParams({bool clipBoardEnabled = true}) async {
     if (!_supportPlatform) return null;
     final Map<dynamic, dynamic>? data =
@@ -39,6 +39,9 @@ class FlUMengLink {
   bool addMethodCallHandler({
     FlUMLinkHandlerError? onError,
 
+    /// h5 热启动app
+    FlUMLinkHandlerLink? onLink,
+
     /// h5 引导安装app 后启动app
     FlUMLinkHandlerLink? onInstall,
   }) {
@@ -47,6 +50,9 @@ class FlUMengLink {
       _channel.setMethodCallHandler(null);
       _channel.setMethodCallHandler((call) async {
         switch (call.method) {
+          case 'onLink':
+            onLink?.call(UMLinkResult.fromMap(call.arguments));
+            break;
           case 'onInstall':
             onInstall?.call(UMLinkResult.fromMap(call.arguments));
             break;
@@ -74,7 +80,7 @@ class UMLinkResult {
   /// path link
   String? path;
 
-  ///  install params
+  /// install params
   Map<dynamic, dynamic>? installParams;
 
   /// uri  onInstall

@@ -6,21 +6,6 @@
 
 * android 配置 [具体参考官方文档](https://developer.umeng.com/docs/191212/detail/191230)
 
--`android/app/src/main/.../MainActivity` 中添加以下内容
-
-```kotlin
-import android.content.Intent
-import fl.umeng.link.UMengLinkPlugin
-
-class MainActivity : FlutterActivity() {
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        UMengLinkPlugin.handleUMLinkURI(this, intent)
-    }
-}
-```
-
 -`android/app/src/main/AndroidManifest.xml` 中添加以下内容
 
 ```xml
