@@ -9,6 +9,9 @@
 -`android/app/src/main/.../MainActivity` 中添加以下内容
 
 ```kotlin
+import android.content.Intent
+import fl.umeng.link.UMengLinkPlugin
+
 class MainActivity : FlutterActivity() {
 
     override fun onNewIntent(intent: Intent) {
