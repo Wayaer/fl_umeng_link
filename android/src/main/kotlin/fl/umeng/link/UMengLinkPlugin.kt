@@ -11,13 +11,42 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.NewIntentListener
 
 /** UMengLinkPlugin */
-class UMengLinkPlugin : FlutterPlugin, MethodCallHandler, NewIntentListener {
+class UMengLinkPlugin : FlutterPlugin, MethodCallHandler {
 
-    private lateinit var channel: MethodChannel
     private lateinit var context: Context
+
+    companion object {
+        lateinit var channel: MethodChannel
+
+        fun handleUMLinkURI(context: Context, intent: Intent) {
+            MobclickLink.handleUMLinkURI(context, intent.data, umLinkAdapter)
+        }
+
+        private var umLinkAdapter: UMLinkListener = object : UMLinkListener {
+            override fun onLink(path: String, params: HashMap<String, String>) {
+                channel.invokeMethod(
+                    "onLink", mapOf(
+                        "path" to path, "params" to params
+                    )
+                )
+            }
+
+            override fun onInstall(params: HashMap<String, String>, uri: Uri) {
+                channel.invokeMethod(
+                    "onInstall", mapOf(
+                        "uri" to uri.path, "params" to params
+                    )
+                )
+            }
+
+            override fun onError(error: String) {
+                channel.invokeMethod("onError", error)
+            }
+        }
+    }
+
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(binding.binaryMessenger, "UMeng.link")
@@ -44,31 +73,4 @@ class UMengLinkPlugin : FlutterPlugin, MethodCallHandler, NewIntentListener {
         channel.setMethodCallHandler(null)
     }
 
-
-    override fun onNewIntent(intent: Intent?): Boolean {
-        if (intent != null) MobclickLink.handleUMLinkURI(context, intent.data, umLinkAdapter)
-        return true
-    }
-
-    private var umLinkAdapter: UMLinkListener = object : UMLinkListener {
-        override fun onLink(path: String, params: HashMap<String, String>) {
-            channel.invokeMethod(
-                "onLink", mapOf(
-                    "path" to path, "params" to params
-                )
-            )
-        }
-
-        override fun onInstall(params: HashMap<String, String>, uri: Uri) {
-            channel.invokeMethod(
-                "onInstall", mapOf(
-                    "uri" to uri.path, "params" to params
-                )
-            )
-        }
-
-        override fun onError(error: String) {
-            channel.invokeMethod("onError", error)
-        }
-    }
 }

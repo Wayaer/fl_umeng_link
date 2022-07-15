@@ -5,7 +5,20 @@
 - 插件已实现部分api，只需在友盟超链配置参数 和 在原生项目中配置部分配置信息
 
 * android 配置 [具体参考官方文档](https://developer.umeng.com/docs/191212/detail/191230)
-  -`android/app/src/main/AndroidManifest.xml` 中添加以下内容
+
+-`android/app/src/main/.../MainActivity` 中添加以下内容
+
+```kotlin
+class MainActivity : FlutterActivity() {
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        UMengLinkPlugin.handleUMLinkURI(this, intent)
+    }
+}
+```
+
+-`android/app/src/main/AndroidManifest.xml` 中添加以下内容
 
 ```xml
 
