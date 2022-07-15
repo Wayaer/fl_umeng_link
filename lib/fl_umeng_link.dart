@@ -19,6 +19,14 @@ class FlUMengLink {
 
   static const MethodChannel _channel = MethodChannel('UMeng.link');
 
+  /// 获取App启动参数
+  Future<UMLinkResult?> getLaunchParams({bool clipBoardEnabled = true}) async {
+    if (!_supportPlatform) return null;
+    final Map<dynamic, dynamic>? data =
+        await _channel.invokeMethod('getLaunchParams', clipBoardEnabled);
+    return data == null ? null : UMLinkResult?.fromMap(data);
+  }
+
   /// 安装后 获取的参数
   Future<bool> getInstallParams({bool clipBoardEnabled = true}) async {
     if (!_supportPlatform) return false;
@@ -31,9 +39,6 @@ class FlUMengLink {
   bool addMethodCallHandler({
     FlUMLinkHandlerError? onError,
 
-    /// h5 直接启动app
-    FlUMLinkHandlerLink? onLink,
-
     /// h5 引导安装app 后启动app
     FlUMLinkHandlerLink? onInstall,
   }) {
@@ -42,9 +47,6 @@ class FlUMengLink {
       _channel.setMethodCallHandler(null);
       _channel.setMethodCallHandler((call) async {
         switch (call.method) {
-          case 'onLink':
-            onLink?.call(UMLinkResult.fromMap(call.arguments));
-            break;
           case 'onInstall':
             onInstall?.call(UMLinkResult.fromMap(call.arguments));
             break;
@@ -61,20 +63,29 @@ class FlUMengLink {
 /// 回调结果
 class UMLinkResult {
   UMLinkResult.fromMap(Map<dynamic, dynamic> map)
-      : params = map['params'] as Map<dynamic, dynamic>?,
+      : installParams = map['installParams'] as Map<dynamic, dynamic>?,
+        linkParams = map['linkParams'] as Map<dynamic, dynamic>?,
         path = map['path'] as String?,
         uri = map['uri'] as String?;
 
-  /// params
-  Map<dynamic, dynamic>? params;
+  /// link params
+  Map<dynamic, dynamic>? linkParams;
 
-  /// path  onLink
+  /// path link
   String? path;
+
+  ///  install params
+  Map<dynamic, dynamic>? installParams;
 
   /// uri  onInstall
   String? uri;
 
-  Map<String, dynamic> toMap() => {'path': path, 'uri': uri, 'params': params};
+  Map<String, dynamic> toMap() => {
+        'path': path,
+        'uri': uri,
+        'linkParams': linkParams,
+        'installParams': installParams
+      };
 }
 
 bool get _supportPlatform {

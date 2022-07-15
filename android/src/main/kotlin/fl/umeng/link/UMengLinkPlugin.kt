@@ -11,42 +11,17 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry.NewIntentListener
 
 /** UMengLinkPlugin */
-class UMengLinkPlugin : FlutterPlugin, MethodCallHandler {
+class UMengLinkPlugin : FlutterPlugin, MethodCallHandler, NewIntentListener {
 
+    private lateinit var channel: MethodChannel
     private lateinit var context: Context
-
-    companion object {
-        lateinit var channel: MethodChannel
-
-        fun handleUMLinkURI(context: Context, intent: Intent) {
-            MobclickLink.handleUMLinkURI(context, intent.data, umLinkAdapter)
-        }
-
-        private var umLinkAdapter: UMLinkListener = object : UMLinkListener {
-            override fun onLink(path: String, params: HashMap<String, String>) {
-                channel.invokeMethod(
-                    "onLink", mapOf(
-                        "path" to path, "params" to params
-                    )
-                )
-            }
-
-            override fun onInstall(params: HashMap<String, String>, uri: Uri) {
-                channel.invokeMethod(
-                    "onInstall", mapOf(
-                        "uri" to uri.path, "params" to params
-                    )
-                )
-            }
-
-            override fun onError(error: String) {
-                channel.invokeMethod("onError", error)
-            }
-        }
-    }
-
+    private var path: String? = null
+    private var uri: String? = null
+    private var linkParams: HashMap<String, String>? = null
+    private var installParams: HashMap<String, String>? = null
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(binding.binaryMessenger, "UMeng.link")
@@ -56,6 +31,16 @@ class UMengLinkPlugin : FlutterPlugin, MethodCallHandler {
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
+            "getLaunchParams" -> {
+                result.success(
+                    mapOf(
+                        "path" to path,
+                        "linkParams" to linkParams,
+                        "uri" to uri,
+                        "installParams" to installParams
+                    )
+                )
+            }
             "getInstallParams" -> {
                 val clipBoardEnabled = call.arguments as Boolean
                 if (!clipBoardEnabled) {
@@ -73,4 +58,30 @@ class UMengLinkPlugin : FlutterPlugin, MethodCallHandler {
         channel.setMethodCallHandler(null)
     }
 
+
+    override fun onNewIntent(intent: Intent?): Boolean {
+        if (intent != null) MobclickLink.handleUMLinkURI(context, intent.data, umLinkAdapter);
+        return true
+    }
+
+    private var umLinkAdapter: UMLinkListener = object : UMLinkListener {
+        override fun onLink(path: String, params: HashMap<String, String>) {
+            this@UMengLinkPlugin.path = path
+            this@UMengLinkPlugin.linkParams = params
+        }
+
+        override fun onInstall(params: HashMap<String, String>, uri: Uri) {
+            this@UMengLinkPlugin.uri = uri.path
+            this@UMengLinkPlugin.installParams = params
+            channel.invokeMethod(
+                "onInstall", mapOf(
+                    "uri" to uri.path, "installParams" to params
+                )
+            )
+        }
+
+        override fun onError(error: String) {
+            channel.invokeMethod("onError", error)
+        }
+    }
 }

@@ -4,15 +4,20 @@
 @interface UMengLinkPlugin () <MobClickLinkDelegate>
 @end
 
-@implementation UMengLinkPlugin
+@implementation UMengLinkPlugin {
+    NSString *_path;
+    NSString *_uri;
+    NSDictionary *linkParams;
+    NSDictionary *installParams;
+}
 
 + (void)registerWithRegistrar:(NSObject <FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel
-                                     methodChannelWithName:@"UMeng.link"
-                                     binaryMessenger:registrar.messenger];
+            methodChannelWithName:@"UMeng.link"
+                  binaryMessenger:registrar.messenger];
     UMengLinkPlugin *instance = [[UMengLinkPlugin alloc] init];
     instance.channel = channel;
-    
+
     [registrar addApplicationDelegate:instance];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -23,7 +28,14 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-    if ([@"getInstallParams" isEqualToString:call.method]) {
+    if ([@"getLaunchParams" isEqualToString:call.method]) {
+        result(@{
+                @"path": _path,
+                @"uri": _uri,
+                @"linkParams": linkParams,
+                @"installParams": installParams,
+        });
+    } else if ([@"getInstallParams" isEqualToString:call.method]) {
         BOOL clipBoardEnabled = [call.arguments boolValue];
         if (clipBoardEnabled) {
             [MobClickLink getInstallParams:^(NSDictionary *params, NSURL *URL, NSError *error) {
@@ -31,8 +43,8 @@
             }];
         } else {
             [MobClickLink getInstallParams:^(NSDictionary *params, NSURL *URL, NSError *error) {
-                [self invokeMethodInstall:params :URL :error];
-            }
+                        [self invokeMethodInstall:params :URL :error];
+                    }
                           enablePasteboard:NO];
         }
         result(@(YES));
@@ -42,9 +54,8 @@
 }
 
 
-
 //Universal link的回调
-- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nonnull))restorationHandler{
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *_Nonnull))restorationHandler {
     [MobClickLink handleUniversalLink:userActivity delegate:self];
     return YES;
 }
@@ -56,19 +67,19 @@
 }
 
 - (void)getLinkPath:(NSString *)path params:(NSDictionary *)params {
-    [self.channel invokeMethod:@"onLink" arguments:@{
-        @"params": params,
-        @"path": path,
-    }];
+    _path = path;
+    linkParams = params;
 }
 
 - (void)invokeMethodInstall:(NSDictionary *)params :(NSURL *)url :(NSError *)error {
     if (error) {
         [self.channel invokeMethod:@"onError" arguments:error.description];
     } else {
+        _uri = url.absoluteString;
+        installParams = params;
         [self.channel invokeMethod:@"onInstall" arguments:@{
-            @"params": params,
-            @"uri": url.absoluteString,
+                @"installParams": params,
+                @"uri": url.absoluteString,
         }];
     }
 }

@@ -46,12 +46,11 @@ class _HomePageState extends State<_HomePage> {
     debugPrint('监听友盟超链安装参数回调');
     final bool? value = await FlUMengLink().getInstallParams();
     debugPrint('getInstallParams 初始化成功 = $value');
+    final UMLinkResult? result = await FlUMengLink().getLaunchParams();
+    debugPrint('getLaunchParams  ${result?.toMap()}');
     final bool handler =
         FlUMengLink().addMethodCallHandler(onInstall: (UMLinkResult? result) {
       text = 'onInstall\n${result?.toMap()}';
-      setState(() {});
-    }, onLink: (UMLinkResult? result) {
-      text = 'onLink\n${result?.toMap()}';
       setState(() {});
     }, onError: (String? error) {
       text = 'onError\n$error';
