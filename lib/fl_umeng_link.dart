@@ -75,15 +75,19 @@ class UMLinkResult {
         uri = map['uri'] as String?;
 
   /// link params
+  /// ios 可能为空map
   Map<dynamic, dynamic>? linkParams;
 
   /// path link
+  /// ios 可能为空字符串
   String? path;
 
   /// install params
+  /// ios 可能为空map
   Map<dynamic, dynamic>? installParams;
 
   /// uri  onInstall
+  /// ios 可能为空字符串
   String? uri;
 
   Map<String, dynamic> toMap() => {

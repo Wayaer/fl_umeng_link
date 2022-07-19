@@ -31,7 +31,7 @@ class _HomePageState extends State<_HomePage> {
     init();
   }
 
-  /// 注册友盟性能检测
+  /// 注册友盟
   Future<void> init() async {
     /// 注册友盟
     debugPrint('注册友盟');
@@ -46,8 +46,7 @@ class _HomePageState extends State<_HomePage> {
     debugPrint('监听友盟超链安装参数回调');
     final bool? value = await FlUMengLink().getInstallParams();
     debugPrint('getInstallParams 初始化成功 = $value');
-    final UMLinkResult? result = await FlUMengLink().getLaunchParams();
-    debugPrint('getLaunchParams  ${result?.toMap()}');
+
     final bool handler =
         FlUMengLink().addMethodCallHandler(onInstall: (UMLinkResult? result) {
       text = 'onInstall\n${result?.toMap()}';
@@ -72,6 +71,13 @@ class _HomePageState extends State<_HomePage> {
               color: Colors.black12, borderRadius: BorderRadius.circular(6)),
           child: SingleChildScrollView(
               child: Text(text, textAlign: TextAlign.center))),
+      ElevatedButton(
+          onPressed: () async {
+            final UMLinkResult? result = await FlUMengLink().getLaunchParams();
+            text = 'getLaunchParams  ${result?.toMap()}';
+            setState(() {});
+          },
+          child: const Text('getLaunchParams')),
     ]);
   }
 }

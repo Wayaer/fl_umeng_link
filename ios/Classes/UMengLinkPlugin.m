@@ -13,11 +13,11 @@
 
 + (void)registerWithRegistrar:(NSObject <FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel
-            methodChannelWithName:@"UMeng.link"
-                  binaryMessenger:registrar.messenger];
+                                     methodChannelWithName:@"UMeng.link"
+                                     binaryMessenger:registrar.messenger];
     UMengLinkPlugin *instance = [[UMengLinkPlugin alloc] init];
     instance.channel = channel;
-
+    
     [registrar addApplicationDelegate:instance];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -30,10 +30,10 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
     if ([@"getLaunchParams" isEqualToString:call.method]) {
         result(@{
-                @"path": _path,
-                @"uri": _uri,
-                @"linkParams": linkParams,
-                @"installParams": installParams,
+            @"path": _path?:@"",
+            @"uri": _uri?:@"",
+            @"linkParams": linkParams?:@{},
+            @"installParams": installParams?:@{},
         });
     } else if ([@"getInstallParams" isEqualToString:call.method]) {
         BOOL clipBoardEnabled = [call.arguments boolValue];
@@ -43,8 +43,8 @@
             }];
         } else {
             [MobClickLink getInstallParams:^(NSDictionary *params, NSURL *URL, NSError *error) {
-                        [self invokeMethodInstall:params :URL :error];
-                    }
+                [self invokeMethodInstall:params :URL :error];
+            }
                           enablePasteboard:NO];
         }
         result(@(YES));
@@ -70,8 +70,8 @@
     _path = path;
     linkParams = params;
     [self.channel invokeMethod:@"onLink" arguments:@{
-            @"linkParams": params,
-            @"path": path,
+        @"linkParams": params,
+        @"path": path,
     }];
 }
 
@@ -82,8 +82,8 @@
         _uri = url.absoluteString;
         installParams = params;
         [self.channel invokeMethod:@"onInstall" arguments:@{
-                @"installParams": params,
-                @"uri": url.absoluteString,
+            @"installParams": params,
+            @"uri": url.absoluteString,
         }];
     }
 }
