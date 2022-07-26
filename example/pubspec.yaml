@@ -1,19 +1,18 @@
-name: fl_umeng_link_example
+name: example
 description: Demonstrates how to use the fl_umeng_link plugin.
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.16.2 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-
   fl_umeng_link:
     path: ../
 
 dev_dependencies:
-  flutter_lints: ^1.0.4
+  flutter_lints: ^2.0.1
 
 flutter:
   uses-material-design: true

@@ -35,7 +35,7 @@ class _HomePageState extends State<_HomePage> {
   Future<void> init() async {
     /// 注册友盟
     debugPrint('注册友盟');
-    final bool? data = await FlUMeng().init(
+    final bool data = await FlUMeng().init(
         preInit: true,
         androidAppKey: '6248116b6adb343c47eff1a4',
         iosAppKey: '6203785ce014255fcb18fcad',
@@ -44,7 +44,7 @@ class _HomePageState extends State<_HomePage> {
     await FlUMeng().setLogEnabled(true);
 
     debugPrint('监听友盟超链安装参数回调');
-    final bool? value = await FlUMengLink().getInstallParams();
+    final bool value = await FlUMengLink().getInstallParams();
     debugPrint('getInstallParams 初始化成功 = $value');
 
     final bool handler =

@@ -117,9 +117,7 @@ class UMengLinkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private var onNewIntent: PluginRegistry.NewIntentListener =
         PluginRegistry.NewIntentListener { intent ->
-            intent?.let {
-                handleUMLinkURI(context, intent)
-            }
+            handleUMLinkURI(context, intent)
             true
         }
 }
