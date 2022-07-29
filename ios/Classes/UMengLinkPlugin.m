@@ -56,14 +56,15 @@
 
 //Universal link的回调
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *_Nonnull))restorationHandler {
-    [MobClickLink handleUniversalLink:userActivity delegate:self];
-    return YES;
+    return [MobClickLink handleUniversalLink:userActivity delegate:self];
 }
 
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    return [MobClickLink handleLinkURL:url delegate:self];
+}
 //URL Scheme回调，iOS9以上，走这个方法
 - (BOOL)application:(UIApplication *)application openURL:(nonnull NSURL *)url options:(nonnull NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
-    [MobClickLink handleLinkURL:url delegate:self];
-    return YES;
+    return [MobClickLink handleLinkURL:url delegate:self];
 }
 
 - (void)getLinkPath:(NSString *)path params:(NSDictionary *)params {

@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Handle issues on ios
+
 ## 0.2.0
 
 * upgrade gradle version
